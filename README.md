@@ -1,2 +1,10 @@
 # patent-puller
- 
+Django web application for pulling patent information. User enters a patent number and patent-puller uses the USPTO assignment API to extract the *current* assignee from the XML assignment data. It also uses Beautiful Soup to scrape the title, abstract, and inventors from the individual patent's page found using a USPTO number search.
+## Currently implemented features
+The user can currently enter only one patent. The patent number itself is validated for formatting. Inventor names are reformatted from "Last; First Middle" into standard "First Middle Last" name order and, if more than one, are concatenated into a comma-separated string containing all inventors. The results of the search are output as paragraphs.
+## To be completed
+* The user should be able to enter multiple patent numbers into a textarea field with one patent per line.
+* The results of the search should be returned as a CSV chart
+## Potential performance improvements
+* The scraping process can be slow since it requires two requests to the USPTO for each patent. It may be worth creating a database to cache patent data to speed up repeated or interrupted requests. 
+* The assignment database files can be very large. Even when requesting assignment data for a single patent, the API returns the full record of all  patents reassigned as part of the same request, which can sometimes number in the hundreds. The record includes detailed information for each patent, much of which is duplicated. It is likely that the user may request multiple patents that were reassigned in the same record. To prevent requesting the same large reassignment XML file repeatedly, it may be worth caching the assignment records by proactively creating a database entry for every patent found in a reassignment record. The database should also include the date the assignment data was pulled and subsequent requests could reuse the data if it is fresh or pull it again after a designated period. If the database grows excessively, stale assignment data could be automatically pruned using a scheduled process.
