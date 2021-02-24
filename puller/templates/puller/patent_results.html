@@ -8,13 +8,29 @@
 <h1>Patent Results</h1
 <div style = "max-width:470px;">
 
+<table>
+<thead>
+	<tr>
+	<th>Number</th>
+	<th>Title</th>
+	<th>Abstract</th>
+	<th>Inventors</th>
+	<th>Assignee</th>
+	</tr>
+</thead>
+<tbody>
 	
-	<p>Patent number: 	{{ patent_number }}</p>
-	<p>{{ patent_title }}</p>
-	<p>{{ patent_abstract }}</p>
-	<p>{{ patent_inventors }}</p>
+	{% for patent in patentDictList %} 
+	<tr>
+		<td>{{ patent.number }}</td>
+		<td>{{ patent.title }}</td>
+		<td>{{ patent.abstract }}</td>
+		<td>{{ patent.inventors }}</td>
+		<td>{{ patent.assignee }}</td>
+	</tr>
+	{% endfor %} 
 	
-
+</tbody>
 </div>
 </body>
 </html>
