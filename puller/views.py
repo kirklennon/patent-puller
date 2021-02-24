@@ -73,7 +73,7 @@ def patent_form(request):
 	
 				soup = BeautifulSoup(page, 'html.parser')
 				
-				patentDict['scrapedTitle'] = soup.find("font", {"size": "+1"}).text
+				patentDict['title'] = soup.find("font", {"size": "+1"}).text
 				
 				inventorcolumn = soup.find("th").parent.td
 				inventorsraw = inventorcolumn.find_all('b')
