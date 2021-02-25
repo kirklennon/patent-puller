@@ -1,9 +1,8 @@
 # patent-puller
 Django web application for pulling patent information. User enters a patent number and patent-puller uses the USPTO assignment API to extract the *current* assignee from the XML assignment data. It also uses Beautiful Soup to scrape the title, abstract, and inventors from the individual patent's page found using a USPTO number search.
 ## Currently implemented features
-The user can currently enter only one patent. The patent number itself is validated for formatting. Inventor names are reformatted from "Last; First Middle" into standard "First Middle Last" name order and, if more than one, are concatenated into a comma-separated string containing all inventors. The results of the search are output as paragraphs.
+The user can multiple line-separated patents in a textarea field. Each patent number  is validated for formatting. Inventor names are reformatted from "Last; First Middle" into standard "First Middle Last" name order and, if more than one, are concatenated into a comma-separated string containing all inventors. The results of the search are output as table rows.
 ## To be completed
-* The user should be able to enter multiple patent numbers into a textarea field with one patent per line.
 * The results of the search should be returned as a CSV chart
 ## Potential performance improvements
 * The scraping process can be slow since it requires two requests to the USPTO for each patent. It may be worth creating a database to cache patent data to speed up repeated or interrupted requests. 
