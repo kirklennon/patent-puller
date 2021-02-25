@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 import re
 
 class PatentForm(forms.Form):
-	patents = forms.CharField(widget=forms.Textarea(attrs={"rows":10, "cols":20}), label='Patent Numbers', help_text='Enter a patent number on each line')
+	patents = forms.CharField(widget=forms.Textarea(attrs={"rows":10, "cols":20}), label='Patent Numbers', help_text='(One patent per line)')
 	
 	def clean_patents(self):
 		rawPatentInput = self.cleaned_data['patents']

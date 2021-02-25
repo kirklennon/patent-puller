@@ -25,7 +25,7 @@ SECRET_KEY = 'f%$@@5%0iv7nk9&dh#2oup0b+9w_7t#yheb3a4httekpr(m8!!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['patent.lennon.dev','127.0.0.1']
 
 
 # Application definition

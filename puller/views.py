@@ -36,8 +36,9 @@ def namelister(inventorsraw):
 		return ', '.join(inventorlist) 
 
 
+
 def index(request):
-	return HttpResponse("Hello, world. You're at the patent puller index.")
+	return HttpResponse("Hello, world.")
 	
 def form_view(request_iter):
 	form = Patentform()
@@ -67,7 +68,7 @@ def puller(pn):
 	# pull assignment information
 	url = 'https://assignment-api.uspto.gov/patent/lookup?query={}&filter=PatentNumber&fields=main'.format(pn)
 	tree = ET.fromstring(requests.get(url).text)
-	patentDict['assignee'] = tree.findtext(".//*[@name='patAssigneeName']/str") 
+	patentDict['assignee'] = tree.findtext(".//*[@name='patAssigneeName']/str").title()
 	return patentDict
 def patent_form(request):
 
