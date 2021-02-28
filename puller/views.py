@@ -68,7 +68,9 @@ def puller(pn):
 	# pull assignment information
 	url = 'https://assignment-api.uspto.gov/patent/lookup?query={}&filter=PatentNumber&fields=main'.format(pn)
 	tree = ET.fromstring(requests.get(url).text)
-	patentDict['assignee'] = tree.findtext(".//*[@name='patAssigneeName']/str").title()
+	# finds first patAssigneeName that's a sibling of an assignment of 
+	# assignor's interest. This skips security interest assignments.
+	patentDict['assignee'] = tree.findtext(".//*[str='ASSIGNMENT OF ASSIGNORS INTEREST (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str").title().replace('Llc','LLC')
 	return patentDict
 def patent_form(request):
 
