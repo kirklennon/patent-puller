@@ -70,7 +70,19 @@ def puller(pn):
 	tree = ET.fromstring(requests.get(url).text)
 	# finds first patAssigneeName that's a sibling of an assignment of 
 	# assignor's interest. This skips security interest assignments.
-	patentDict['assignee'] = tree.findtext(".//*[str='ASSIGNMENT OF ASSIGNORS INTEREST (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str").title().replace('Llc','LLC')
+	assignee = tree.findtext(".//*[str='ASSIGNMENT OF ASSIGNORS INTEREST (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str")
+	# Checks to see if any assignee changed its name
+	nameChangeAssignee = tree.findtext(".//*[str='CHANGE OF NAME (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str")
+	nameChangeAssignor = tree.findtext(".//*[str='CHANGE OF NAME (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssignorName']/str")
+	if nameChangeAssignee is not None:
+		if nameChangeAssignor.split(' ')[0] == assignee.split(' ')[0]:
+		# A previous assignee may have changed its name and then reassigned 
+		# so this checks to make sure the name change is for the presumptive
+		# assignee. Sometimes there are slight discrepancies in the name   
+		# so it compares only the first word. Still doesn't catch this edge case:
+		# Initial Inc. renamed Initial LLC reassigns to Final Inc.
+			assignee = nameChangeAssignee
+	patentDict['assignee'] = assignee.title().replace('Llc','LLC')
 	return patentDict
 def patent_form(request):
 
