@@ -1,9 +1,8 @@
 # patent-puller
-Django web application for pulling patent information. User enters a patent number and patent-puller uses the USPTO assignment API to extract the *current* assignee from the XML assignment data. It also uses Beautiful Soup to scrape the title, abstract, and inventors from the individual patent's page found using a USPTO number search.
+Django web application for pulling patent information. User enters a patent number and patent-puller uses the USPTO assignment API to extract the *current* assignee from the XML assignment data. The original version used Beautiful Soup to scrape the title, abstract, and inventors from the individual patent's page found using a USPTO number search, but that straightforward indvidual information page was discontinued and replaced with a convoluted JavaScript-heavy search tool. Thankfully the USPTO also has a [poorly-publicised API](https://developer.uspto.gov/ibd-api/swagger-ui/index.html) that makes the same information availble as JSON.
 ## Currently implemented features
-The user can multiple line-separated patents in a textarea field. Each patent number  is validated for formatting. Inventor names are reformatted from "Last; First Middle" into standard "First Middle Last" name order and, if more than one, are concatenated into a comma-separated string containing all inventors. The results of the search are output as table rows.
+The user can multiple line-separated patents in a textarea field. Each patent number  is validated for formatting. Inventor names are reformatted from "Last First Middle" into standard "First Middle Last" name order and, if more than one, are concatenated into a comma-separated string containing all inventors. The results of the search are output as table rows.
 ## To be completed
-* No assignment data: If the reassignment database has no entries, the applicant from the original patent should be used instead.
 * Reassignment data inaccuracies: The tool should account for assignee name changes and mergers.
 ## Potential performance improvements
 * The scraping process can be slow since it requires two requests to the USPTO for each patent. It may be worth creating a database to cache patent data to speed up repeated or interrupted requests. 
