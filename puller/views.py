@@ -5,24 +5,16 @@ from django.urls import reverse
 from puller.forms import PatentForm
 
 import requests
-# from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 import concurrent.futures
 
-def nameflipper(raw):
-	'''Takes name in the format 'Last First M.'   
-	and returns it as 'First M. Last'
-	'''
-	splitName = raw.split(' ', 1)
-	return splitName[1] + ' ' + splitName[0]
-	
 def namelister(inventorsRaw):
 	'''Combines all inventors into a    
 	single comma-separated list'
 	'''
 	inventorList = []
 	for inventor in inventorsRaw:
-		inventorList.append(nameflipper(inventor))
+		inventorList.append(inventor["inventor_first_name"] + ' ' + inventor["inventor_last_name"])
 	if len(inventorList) == 1:
 		return inventorList[0]
 	else:
@@ -43,18 +35,24 @@ def form_view(request_iter):
 
 def puller(pn):
 	patentDict = {'number' : pn}
-	# scrape everything but assignee
-	url = 'https://developer.uspto.gov/ibd-api/v1/application/grants?patentNumber={}'.format(pn)
-
-	result = requests.get(url, headers={'accept': 'application/json'}).json()
+	# pull everything but assignee
+	url = f'https://api.patentsview.org/patents/query?q=\u007b"patent_number":"{pn}"\u007d&f=["patent_title","patent_abstract","assignee_organization","lawyer_organization","patent_number","inventor_first_name","inventor_last_name"]'
 	
-	patentDict['title'] = result["results"][0]["inventionTitle"]
-	patentDict['abstract'] = result["results"][0]["abstractText"][0]
+	patent = requests.get(url, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36', 'accept': 'application/json'}).json()["patents"][0]
 	
-	inventorsRaw = result["results"][0]["inventorNameArrayText"]
+	patentDict['title'] = patent["patent_title"]
+	
+	if patent["patent_abstract"] is not None:
+		patentDict['abstract'] = patent["patent_abstract"]
+	else:
+		patentDict['abstract'] = '(none)'
+	
+	inventorsRaw = patent["inventors"]
 	patentDict['inventors'] = namelister(inventorsRaw)
 	
-	originalAssignee = result["results"][0]["assigneeEntityName"]
+	lawFirm = patent["lawyers"][0]["lawyer_organization"]
+	
+	originalAssignee = patent["assignees"][0]["assignee_organization"]
 	
 
 	# pull reassignment information
@@ -64,6 +62,11 @@ def puller(pn):
 	# Check if firm worked on patent previously
 	firmName = 'NameOfFirm'
 	firmNameFoundIn = ''
+	
+	if lawFirm is not None:
+		if firmName in lawFirm:
+			firmNameFoundIn = str(pn)
+		
 	if firmName.upper() in rawXML:
 		firmNameFoundIn = str(pn)
 	
