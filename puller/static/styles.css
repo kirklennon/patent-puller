@@ -1,0 +1,109 @@
+html { font-family: 'helvetica neue', helvetica, arial, sans-serif;}
+
+body {background-color: #091f36;
+	color:#333;
+}
+
+header {
+	color: white;
+	background-color: #091f36;
+	padding: 0;
+}
+
+header h1 {
+	float:left;
+	margin: 0;}
+
+a {color: #0f2862;}
+
+#container {
+width: 90%;
+margin: auto;
+}
+
+#reset {
+	margin-right: 10px;
+	vertical-align: middle;
+	float: right;
+	color: #ddd;}
+#reset a {
+	text-decoration: none;
+	color: white;
+}
+
+#patentsFoundParagraph {
+	text-align: center;
+	padding-bottom: 1em;
+}
+
+.toggle {display: none;}
+.toggle.is-visible {display: block;}
+
+main {border-radius: 5px;
+	background-color: white;
+	clear:both;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+thead th {padding-top: 1em;
+		padding-bottom: 0.5em;
+}
+
+
+table a {text-decoration: none;}
+
+td {text-align: center;
+	padding: 2px;
+	vertical-align: top;}
+
+td:nth-child(1) {width: 10%; text-align: left; padding-left: 2em;}
+td:nth-child(2) { width: 15%; text-align: left; padding-right: 1em;}
+td:nth-child(3) { width: 50%; text-align: left; padding-right: 1em;}
+td:nth-child(4) { width: 15%; text-align: left; padding-right: 1em;}
+td:nth-child(5) { width: 10%; text-align: right; padding-right: 2em;}
+
+thead th:nth-child(1) { width: 10%; text-align: left; padding-left: 2em;}
+thead th:nth-child(2) { width: 15%; text-align: left; padding-left: 1em;}
+thead th:nth-child(3) { width: 50%; text-align: left; padding-left: 1em;}
+thead th:nth-child(4) { width: 15%; text-align: left; padding-right: 1em;}
+thead th:nth-child(5) { width: 10%; text-align: right; padding-right: 2em;}
+
+
+
+tbody tr {border-top: 1px solid #ddd;}
+
+input, select {
+  font-family: inherit;
+  color: inherit;
+}
+input[type=number]{width: 6em; } 
+
+input, button {
+	border: 1px solid #4f5f76;
+	border-radius: 3px;
+	background-color:#fff;}
+
+
+li,form {display:inline;}
+li {padding-right:3em;}
+
+#filters {
+	padding-top: 1em;
+	text-align: center;
+	font-size: 90%;
+	color: #555;
+}
+.filterblocks {
+	display: inline-block;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 4px 4px;
+	margin: auto 5px;
+}
+.filtertitle {
+	font-size: 90%;
+	font-weight: bold;}

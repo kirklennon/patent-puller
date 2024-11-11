@@ -22,7 +22,7 @@ class PatentForm(forms.Form):
 				# implement later
 			
 			# craft a regex	replacement instead at some point
-			barePatentNumber = rawPatentNumber.replace(',', '').replace('US', '').replace('us', '').replace('A1', '').replace('a1', '').replace('A2', '').replace('a2', '').replace('B1', '').replace('b1', '').replace('B2', '').replace('b2', '').replace('E', '').replace('e', '').replace('E1', '').replace('e1', '').replace('S', '').replace('s', '').replace('S1', '').replace('s1', '')
+			barePatentNumber = rawPatentNumber.replace(',', '').replace('US', '').replace('us', '').replace('A1', '').replace('a1', '').replace('A2', '').replace('a2', '').replace('B1', '').replace('b1', '').replace('B2', '').replace('b2', '').replace('E1', '').replace('e1', '').replace('S', '').replace('s', '').replace('S1', '').replace('s1', '')
 		
 			patentNumberList.append(barePatentNumber)
 		# new list

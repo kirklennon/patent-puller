@@ -24,28 +24,34 @@ td {
 
 
 <table>
-<thead>
-	<tr>
-	<th>Number</th>
-	<th>Title</th>
-	<th>Abstract</th>
-	<th>Inventors</th>
-	<th>Assignee</th>
-	</tr>
-</thead>
-<tbody>
+	<thead>
+		<tr>
+		<th>Number</th>
+		<th>Title</th>
+		<th>Abstract</th>
+		<th>Inventors</th>
+		<th>Assignee</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+		{% for patent in patentDictList %} 
+		<tr>
+			<td>{{ patent.number }}</td>
+			<td>{{ patent.title }}</td>
+			<td>{{ patent.abstract }}</td>
+			<td>{{ patent.inventors }}</td>
+			<td>{{ patent.assignee }}</td>
+		</tr>
+		{% endfor %} 
+		
+	</tbody>
+	</table>
 	
-	{% for patent in patentDictList %} 
-	<tr>
-		<td>{{ patent.number }}</td>
-		<td>{{ patent.title }}</td>
-		<td>{{ patent.abstract }}</td>
-		<td>{{ patent.inventors }}</td>
-		<td>{{ patent.assignee }}</td>
-	</tr>
-	{% endfor %} 
-	
-</tbody>
-</div>
-</body>
-</html>
+	<p>&ldquo;Perkins Coie&rdquo; was found in assignment information for the following patents:
+		{% for foundPatent in firmNameFoundList %}
+			{{ foundPatent }}
+		{% endfor %} 
+	</div>
+	</body>
+	</html>

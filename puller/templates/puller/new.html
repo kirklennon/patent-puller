@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Patent Search</title>
+	<link rel="stylesheet" href="static/styles.css" type="text/css">
+</head>
+<body>
+<div id="container">
+<header>
+<h1>Patent Search</h1>
+<p id="reset"><a href="/">Reset Search</a></p>
+</header>
+<main>
+<div id="filters" class="toggle is-visible"> 
+	<div class="filterblocks">
+		<span class="filtertitle">Patent Numbers</span><br />
+		<form><textarea id="rawPatentInput" rows="5" cols="20" name="rawPatentInput"></textarea> <br />
+		<input type="submit" onclick="searchPatents();return false;" value="Search"></form>
+		</div>		
+</div>
+<table class="table">
+	<thead>
+	<tr>
+		<th scope="col">Patent No.</th>
+		<th scope="col">Title</th>
+		<th scope="col">Abstract</th>
+		<th scope="col">Inventors</th>
+		<th scope="col">Assignee</th>
+	</tr>
+	</thead>
+
+<tbody><!-- table populates on search --></tbody>
+</table>
+
+<p id="patentsFoundParagraph"><!-- paragraph populates on search --></p>
+
+</main>
+</div>
+</body>
+<script src="static/table.js"></script>
+</html>
