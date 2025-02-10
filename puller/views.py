@@ -22,7 +22,7 @@ def namelister(inventorsRaw):
 	'''
 	inventorList = []
 	for inventor in inventorsRaw:
-		inventorList.append(inventor["inventor_first_name"] + ' ' + inventor["inventor_last_name"])
+		inventorList.append(inventor["inventor_name_first"] + ' ' + inventor["inventor_name_last"])
 	if len(inventorList) == 1:
 		return inventorList[0]
 	else:
@@ -81,10 +81,14 @@ def form_view(request_iter):
 def puller(pn):
 	patentDict = {'number' : pn}
 	# pull everything but assignee
-	url = f'https://api.patentsview.org/patents/query?q=\u007b"patent_number":"{pn}"\u007d&f=["patent_title","patent_abstract","assignee_organization","lawyer_organization","patent_number","inventor_first_name","inventor_last_name"]'
+	url = 'https://search.patentsview.org/api/v1/patent/'
+	query = {
+		  "f": ["patent_title","patent_abstract","patent_id", "attorneys.attorney_organization", "application.application_id", "inventors.inventor_name_first", "inventors.inventor_name_last", "assignees.assignee_organization"],
+		  "q": { "patent_id": pn}
+		}
 	
 	try:
-		patent = requests.get(url, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36', 'accept': 'application/json'})
+		patent = requests.post(url, json = query, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36', 'accept': 'application/json', 'X-Api-Key': 'InsertPatentsViewAPIKeyHere'})
 		patent.raise_for_status()
 		patent = patent.json()["patents"][0]
 	
@@ -106,22 +110,21 @@ def puller(pn):
 		inventorsRaw = patent["inventors"]
 		patentDict['inventors'] = namelister(inventorsRaw)
 		
-		lawFirm = patent["lawyers"][0]["lawyer_organization"]
+		lawFirm = patent["attorneys"][0]["attorney_organization"]
 		
 		originalAssignee = patent["assignees"][0]["assignee_organization"]
 	
 
 	# pull reassignment information
-	url = 'https://assignment-api.uspto.gov/patent/lookup?query={}&filter=PatentNumber&fields=main'.format(pn)
+	url = 'https://beta-api.uspto.gov/api/v1/patent/applications/{}/assignment'.format(patent["application"][0]["application_id"].replace('/',''))
 	
 	# Check if firm worked on patent previously
 	firmName = 'Firm Name Goes Here'
 	firmNameFoundIn = ''
 	
 	try:
-		rawXML = requests.get(url, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'}, verify=False)
-		rawXML.raise_for_status()
-		rawXML = rawXML.text
+		response = requests.get(url, headers={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36', 'accept': 'application/json', 'X-API-KEY': 'InsertUSPTOOpenDataPortalAPIKeyHere'})
+		response.raise_for_status()
 		
 	except requests.exceptions.ConnectionError:
 		patentDict['assignee'] = "Error"
@@ -130,34 +133,46 @@ def puller(pn):
 		if lawFirm is not None:
 			if firmName in lawFirm:
 				firmNameFoundIn = str(pn)
-			
-		if firmName.upper() in rawXML:
+				
+		if firmName.upper() in response.text:
 			firmNameFoundIn = str(pn)
 		
-		tree = ET.fromstring(rawXML)
-		presumptiveAssignee = tree.findtext(".//*[str='ASSIGNMENT OF ASSIGNORS INTEREST (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str")
-		# finds first patAssigneeName that's a sibling of an assignment of 
-		# assignor's interest. This skips security interest assignments.
-		if presumptiveAssignee is not None:
-		# checks to see that the patent has been reassigned at least once
-			nameChangeAssignee = tree.findtext(".//*[str='CHANGE OF NAME (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str")
-			nameChangeAssignor = tree.findtext(".//*[str='CHANGE OF NAME (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssignorName']/str")
-			if nameChangeAssignee is not None:
-			# Checks to see if any assignee changed its name
-				if nameChangeAssignor.split(' ')[0] == presumptiveAssignee.split(' ')[0]:
-				# A previous assignee may have changed its name and then reassigned 
-				# so this checks to make sure the name change is for the presumptive
-				# assignee. Sometimes there are slight discrepancies in the name   
-				# so it compares only the first word. Still doesn't catch this edge case:
-				# Initial Inc. renamed Initial LLC reassigns to Final Inc.
-					finalAssignee = nameChangeAssignee
-				else:
-					# somebody changed names but it wasn't the presumptive assignee
+		response = response.json()
+		
+		# check to see if there is any reassignment data
+		try:
+			assignmentBag = response["patentFileWrapperDataBag"][0]["assignmentBag"]
+			
+			# find the first assignment of assignor's interest; they are always in reverse chronological order
+			filteredListOfAssignments = [x for x in assignmentBag if x["conveyanceText"]=="ASSIGNMENT OF ASSIGNORS INTEREST (SEE DOCUMENT FOR DETAILS)."]
+			presumptiveAssignee = filteredListOfAssignments[0]["assigneeBag"][0]["assigneeNameText"]
+		
+			# checks to see that the patent has been reassigned at least once
+			if presumptiveAssignee is not None:
+			
+			
+			
+				# Below block searched for name changes using the old XML API. It needs to be re-implemented using
+				# the new JSON API. Leaving this code here for the overall logic and relevant strings
+				
+				# nameChangeAssignee = tree.findtext(".//*[str='CHANGE OF NAME (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssigneeName']/str")
+				# nameChangeAssignor = tree.findtext(".//*[str='CHANGE OF NAME (SEE DOCUMENT FOR DETAILS).']/*[@name='patAssignorName']/str")
+				# if nameChangeAssignee is not None:
+				# # Checks to see if any assignee changed its name
+				# 	if nameChangeAssignor.split(' ')[0] == presumptiveAssignee.split(' ')[0]:
+				# 	# A previous assignee may have changed its name and then reassigned 
+				# 	# so this checks to make sure the name change is for the presumptive
+				# 	# assignee. Sometimes there are slight discrepancies in the name   
+				# 	# so it compares only the first word. Still doesn't catch this edge case:
+				# 	# Initial Inc. renamed Initial LLC reassigns to Final Inc.
+				# 		finalAssignee = nameChangeAssignee
+				# 	else:
+				# 		# somebody changed names but it wasn't the presumptive assignee
+				# 		finalAssignee = presumptiveAssignee
+				# else:
+				# 	# nobody changed names
 					finalAssignee = presumptiveAssignee
-			else:
-				# nobody changed names
-				finalAssignee = presumptiveAssignee
-		else: # patent never reassigned; belongs to original applicant
+		except KeyError: # patent never reassigned; belongs to original applicant
 			if originalAssignee:
 				finalAssignee = originalAssignee
 			else:
