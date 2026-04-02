@@ -43,12 +43,13 @@ function searchPatents(){
 	getData();
 }
 
-function generateQueryString() {
-	return `?countPerPage=${countPerPage}&sort=${sort}&selectedClass=${selectedClass}&selectedQuality=${selectedQuality}&priceMin=${priceMin}&priceMax=${priceMax}&caratMin=${caratMin}&caratMax=${caratMax}&selectedLocation=${selectedLocation}&serialSearch=${serialSearch}`
-}
+// function generateQueryString() {
+// 	return `?countPerPage=${countPerPage}&sort=${sort}&selectedClass=${selectedClass}&selectedQuality=${selectedQuality}&priceMin=${priceMin}&priceMax=${priceMax}&caratMin=${caratMin}&caratMax=${caratMax}&selectedLocation=${selectedLocation}&serialSearch=${serialSearch}`
+// }
 
 async function getData(data = {'patentNumberList': patentNumberList}) {
 	table.innerHTML = '';
+	patentsFoundParagraph.innerHTML = '';
 	fetch('/search', {
 		method: "POST",
 		cache: "no-cache", 
@@ -61,7 +62,7 @@ async function getData(data = {'patentNumberList': patentNumberList}) {
 		return response.json();
 	  })
 	  .then(function (searchResults) {
-		patentsFoundParagraphFullText = `“Perkins Coie” was found in assignment information for the following patents: ${searchResults.firmNameFoundList}`
+		patentsFoundParagraphFullText = `“Dewey, Cheatem & Howe” was found in assignment information for the following patents: ${searchResults.firmNameFoundList}`
 		patents = searchResults.patentDictList;
 		// firmNameFoundIn = searchResults.firmNameFoundList;
 		
